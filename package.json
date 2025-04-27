@@ -1,0 +1,21 @@
+{
+  "name": "buruaka_wordle_google_ver",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "buruaka_wordle_google_ver": "file:",
+    "fuse.js": "^7.1.0",
+    "pinyin-pro": "^3.26.0",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.2",
+    "vite": "^6.3.1"
+  }
+}

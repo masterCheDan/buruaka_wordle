@@ -1,0 +1,288 @@
+/* Basic Reset & Layout */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f4f8;
+    color: #333;
+}
+
+#app {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #007bff;
+    /* Blue Archive Theme Color */
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    /* Include padding in width */
+    margin-bottom: 10px;
+}
+
+/* Component Specific Styles */
+
+/* Score Counter */
+.score-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+.score-counter span {
+    margin-right: 15px;
+}
+
+/* Search Input & Dropdown */
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.dropdown-list {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.dropdown-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.dropdown-list li:hover {
+    background-color: #f0f4f8;
+}
+
+.dropdown-list li .char-name {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.dropdown-list li .char-name:hover {
+    text-decoration: underline;
+}
+
+.dropdown-list li button {
+    padding: 4px 8px;
+    font-size: 0.8em;
+    flex-shrink: 0;
+    /* Prevent button from shrinking */
+}
+
+/* Image Preview */
+.preview-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 130px;
+    /* Ensure space even when empty */
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.preview-area img {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 4px;
+}
+
+.preview-area .placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Guess History Table */
+.guess-history-wrapper {
+    /* New wrapper for horizontal scroll */
+    overflow-x: auto;
+    /* Allow horizontal scroll on small screens */
+    margin-bottom: 20px;
+}
+
+.guess-history {
+    /* Removed margin-bottom, moved to wrapper */
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+    /* Still needed for border-radius clipping */
+    min-width: 700px;
+    /* Example: Set a minimum width to force scroll sooner */
+    /* Adjust this value based on your content */
+}
+
+.guess-row,
+.header-row {
+    display: grid;
+    /* Adjust the number of columns based on GuessHistoryTable headers + Name */
+    /* Example: Name + 8 fields = 9 columns */
+    grid-template-columns: repeat(9, 1fr);
+    /* Or define specific widths if needed: */
+    /* grid-template-columns: 1.5fr repeat(8, 1fr); /* Make Name column wider */
+    /* text-align: center; */
+    /* REMOVED */
+    border-bottom: 1px solid #dee2e6;
+}
+
+.guess-history .guess-row:last-child {
+    border-bottom: none;
+}
+
+
+.header-row {
+    background-color: #e9ecef;
+    font-weight: bold;
+    position: sticky;
+    /* Make header sticky when scrolling vertically */
+    top: 0;
+    /* Requires parent container with overflow */
+    z-index: 1;
+    /* Ensure header stays above rows */
+}
+
+.header-row div,
+.guess-row div {
+    padding: 10px 8px;
+    /* Adjusted padding */
+    font-size: 0.85em;
+    overflow-wrap: normal;
+    /* Override any global break-word */
+    border-right: 1px solid #dee2e6;
+    text-align: left;
+    /* CHANGED from center */
+
+
+    /* --- Prevent Wrapping --- */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* ----------------------- */
+}
+
+.header-row div:last-child,
+.guess-row div:last-child {
+    border-right: none;
+}
+
+/* Feedback Colors (remain the same) */
+.cell {
+    transition: background-color 0.5s ease-in-out;
+}
+
+.correct {
+    background-color: #d4edda;
+    /* Light Green */
+    color: #155724;
+}
+
+.close {
+    background-color: #fff3cd;
+    /* Light Yellow */
+    color: #856404;
+}
+
+.incorrect {
+    background-color: #f8d7da;
+    /* Light Red / Pink */
+    color: #721c24;
+}
+
+/* Hint Area */
+.hint-area {
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    background-color: #cce5ff;
+    /* Light Blue */
+    border: 1px solid #b8daff;
+    border-radius: 4px;
+    color: #004085;
+    text-align: center;
+}
+
+/* Result Display */
+.result-area {
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.result-area.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.result-area.failure {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.result-area img {
+    display: block;
+    margin: 15px auto 0;
+    max-width: 100px;
+    max-height: 100px;
+}
