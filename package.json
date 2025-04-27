@@ -1,21 +1,24 @@
 {
-  "name": "buruaka_wordle_google_ver",
+  "name": "buruaka_wordle",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "buruaka_wordle_google_ver": "file:",
+    "buruaka_wordle": "file:",
     "fuse.js": "^7.1.0",
     "pinyin-pro": "^3.26.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.2",
+    "gh-pages": "^6.3.0",
     "vite": "^6.3.1"
-  }
+  },
+  "homepage": "https://masterchedan.github.io/buruaka_wordle/"
 }

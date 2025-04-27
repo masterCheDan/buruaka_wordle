@@ -159,7 +159,7 @@ function handleImageError(event) {
           <li v-for="char in searchResults" :key="char.Id">
             <img
                 v-if="char.Id"
-                :src="`/images/students/${char.Id}.webp`"
+                :src="`images/students/${char.Id}.webp`"
                 :alt="char.fullName"
                 class="dropdown-char-icon"
                 @error="handleImageError"

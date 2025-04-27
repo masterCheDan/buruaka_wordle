@@ -23,10 +23,10 @@ const fieldsToCompare = [
 
 const hintFields = ['Birthday', 'Hobby', 'CharacterVoice', 'Illustrator'];
 const fieldNameMap = {
-    'School': '学校', 'StartGrade': '初始星级', 'TacticRole': '定位',
+    'School': '学校', 'StarGrade': '初始星级', 'TacticRole': '定位',
     'BulletType': '攻击属性', 'ArmorType': '防御属性', 'CharacterAge': '年龄',
     'CharHeightMetric': '身高', 'Birthday': '生日', 'Hobby': '爱好', 'CharacterVoice': '声优',
-    'Illuminator': '画师'
+    'Illustrator': '画师'
     // Add other field names...
 };
 
@@ -150,7 +150,6 @@ export function useGameLogic() {
     }
 
     function checkAndShowHint() {
-        const hintTriggerTurn = Math.ceil(MAX_GUESSES * HINT_TURN_PERCENTAGE);
         if (guesses.value.length === hintTriggerTurn.value && gameStatus.value === 'playing' && !hint.value) {
             if (!targetCharacter.value) return;
 

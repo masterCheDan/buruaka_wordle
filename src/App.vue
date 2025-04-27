@@ -63,8 +63,8 @@ function handleGuess(character) {
         <ScoreCounter
             :total="totalGames"
             :won="gamesWon"
-            :current-max-guesses="maxGuesses"
-            :max-guesses-model="customMaxGuessesInput"
+            :currentMaxGuesses="currentMaxGuesses"
+            :maxGuessesModel="customMaxGuessesInput"
             @update:maxGuessesModel="customMaxGuessesInput = $event"
             @apply-max-guesses="setMaxGuesses" 
             @new-game="startNewGame"

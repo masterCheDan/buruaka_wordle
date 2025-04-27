@@ -25,12 +25,12 @@ function getDisplayValue(guess, key) {
 <template>
     <div class="guess-history">
         <div v-if="headers && headers.length > 0" class="header-row">
-            <div>名称</div>
+            <div>姓名</div>
             <div v-for="header in headers" :key="header.key">{{ header.label }}</div>
         </div>
         <div v-if="guesses.length === 0 && headers.length > 0">
             <div style="text-align: center; padding: 20px; color: #6c757d;">
-                输入名称开始猜测...
+                输入学生姓名开始猜测...
             </div>
         </div>
         <div v-for="(item, index) in guesses" :key="index" class="guess-row">

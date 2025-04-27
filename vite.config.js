@@ -1,7 +1,6 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 import path from 'path';
-// https://vite.dev/config/
 
 export default defineConfig({
   plugins: [vue()],
@@ -10,4 +9,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  base: '/buruaka_wordle/',  // 设置为 GitHub 仓库的名字
 });

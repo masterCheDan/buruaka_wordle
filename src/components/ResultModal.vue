@@ -61,7 +61,7 @@ function fullName(char) {
           <h3>正确答案：{{ fullName(targetCharacter) }}</h3>
           <img
             v-if="targetCharacter.Id"
-            :src="`/images/students/${targetCharacter.Id}.webp`"
+            :src="`images/students/${targetCharacter.Id}.webp`"
             :alt="targetCharacter.fullName"
             class="modal-char-image"
             @error="handleImageError"

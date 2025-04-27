@@ -17,7 +17,9 @@ export function useCharacterData() {
         error.value = null;
         try {
             // Assuming characters.json is in /public/data/
-            const response = await fetch('/data/students.json');
+            const response = await fetch('data/students.json');
+            console.log('Fetching character data from:', response.url);
+            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
