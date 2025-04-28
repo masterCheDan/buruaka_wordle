@@ -294,3 +294,19 @@ input[type="text"] {
     display: block;
     object-fit: contain;
 }
+
+.simple-footer {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    padding: 20px 0;
+}
+
+.simple-footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.simple-footer a:hover {
+    text-decoration: underline;
+}

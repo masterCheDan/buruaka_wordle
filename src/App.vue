@@ -108,4 +108,14 @@ function handleGuess(character) {
         @new-game="startNewGameAndCloseModal"
     />
   </div>
+  <footer class="simple-footer">
+  <p>© 2025 masterCheDan. All rights reserved.</p>
+  <p>
+    请到
+    <a href="https://github.com/masterCheDan/buruaka_wordle/issues" target="_blank" rel="noopener noreferrer">
+      这里
+    </a>
+    反馈你遇到的 bug、提出你的建议或是告诉我们你想要的功能。
+  </p>
+</footer>
 </template>
