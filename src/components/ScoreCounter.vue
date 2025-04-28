@@ -31,7 +31,7 @@ function applySetting() {
     <div class="scores">
       <span>轮数：{{ total }}</span>
       <span>胜利：{{ won }}</span>
-      <span>当前最大猜测数：{{ currentMaxGuesses }}</span>
+      <span>当前每轮最高可猜测次数：{{ currentMaxGuesses }}</span>
     </div>
     <div class="settings">
       <label for="max-guesses-input">设置最大猜测数 (1-20):</label>

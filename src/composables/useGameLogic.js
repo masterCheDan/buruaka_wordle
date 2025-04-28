@@ -58,12 +58,21 @@ export function useGameLogic() {
         totalGames.value = parseInt(localStorage.getItem(SCORE_STORAGE_KEY_TOTAL) || '0');
         gamesWon.value = parseInt(localStorage.getItem(SCORE_STORAGE_KEY_WON) || '0');
         const savedMax = localStorage.getItem(MAX_GUESSES_STORAGE_KEY);
-        maxGuesses.value = savedMax ? parseInt(savedMax) : DEFAULT_MAX_GUESSES;
-        // Ensure value is reasonable
-        if (isNaN(maxGuesses.value) || maxGuesses.value < 1 || maxGuesses.value > 20) {
-            maxGuesses.value = DEFAULT_MAX_GUESSES;
+        let initialMax = DEFAULT_MAX_GUESSES;
+        if (savedMax) {
+            const parsedMax = parseInt(savedMax);
+            // Validate loaded value
+            if (!isNaN(parsedMax) && parsedMax > 0 && parsedMax <= 20) {
+                initialMax = parsedMax;
+            } else {
+                console.warn(`Invalid maxGuesses value found in localStorage (${savedMax}), using default.`);
+                localStorage.removeItem(MAX_GUESSES_STORAGE_KEY); // Remove invalid value
+            }
         }
-        customMaxGuessesInput.value = maxGuesses.value; // Sync input ref
+        maxGuesses.value = initialMax;
+        customMaxGuessesInput.value = initialMax; // Sync input ref
+        // --- DEBUG LOG ---
+        console.log('[useGameLogic] loadSettings: maxGuesses initialized to', maxGuesses.value);
     }
 
     function setMaxGuesses(newValue) {
@@ -73,7 +82,6 @@ export function useGameLogic() {
             maxGuesses.value = numVal;
             customMaxGuessesInput.value = numVal; // Keep input synced
             localStorage.setItem(MAX_GUESSES_STORAGE_KEY, maxGuesses.value.toString());
-            console.log("Max guesses set to:", maxGuesses.value);
             // Re-check lose condition immediately if game is in progress
             if (gameStatus.value === 'playing' && guesses.value.length >= maxGuesses.value) {
                 gameStatus.value = 'lost';
@@ -101,7 +109,6 @@ export function useGameLogic() {
         if (allCharacters.value.length > 0) {
             const randomIndex = Math.floor(Math.random() * allCharacters.value.length);
             targetCharacter.value = allCharacters.value[randomIndex];
-            console.log("Target selected:", targetCharacter.value.Name); // Debugging
         } else {
             console.error("Cannot select target character, data not loaded.");
             gameStatus.value = 'error'; // Or handle appropriately
@@ -133,7 +140,6 @@ export function useGameLogic() {
                 feedback[field] = 'correct';
             } else {
                 if (fieldType === 'numeric') {
-                    console.log('guessValue:', guessValue, 'targetValue:', targetValue); // Debugging
                     if (Math.abs(String(guessValue).match(/\d+/) - String(targetValue).match(/\d+/)) <= threshold) {
                         feedback[field] = 'close';
                     } else {

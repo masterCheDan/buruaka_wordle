@@ -11,7 +11,10 @@ export const schoolMap = {
     'Arius': '阿里乌斯',
     'Hyakkiyako': '百鬼夜行',
     'RedWinter': '红冬',
-    'Highlander': '海兰德'
+    'Highlander': '海兰德',
+    'Tokiwadai': '常磐台',
+    'Sakugawa': '栅川中学',
+    'ETC': '其他'
     // ...
 };
 

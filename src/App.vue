@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useCharacterData } from './composables/useCharacterData';
 import { useGameLogic } from './composables/useGameLogic';
 
@@ -23,10 +23,17 @@ const {
   submitGuess,
   startNewGame,
   targetCharacter, // Needed for final result display
-  comparisonHeaders // Get headers for the table
+  comparisonHeaders, // Get headers for the table
+  maxGuesses,
+  customMaxGuessesInput,
+  setMaxGuesses
 } = useGameLogic();
 
 const isModalOpen = ref(false);
+
+watch(maxGuesses,(newVal)=>{
+  console.log('maxGuesses changed:', newVal);
+})
 
 watch (gameStatus, (newStatus) => {
   if (newStatus === 'won' || newStatus === 'lost') {
@@ -52,7 +59,7 @@ function handleGuess(character) {
 
 <template>
   <div>
-    <h1>Buruaka Wordle</h1>
+    <img src="/images/logo/title.png" alt="Logo" class="title-logo" />
 
     <div v-if="error" class="result-area failure">
       {{ error }}
@@ -63,7 +70,7 @@ function handleGuess(character) {
         <ScoreCounter
             :total="totalGames"
             :won="gamesWon"
-            :currentMaxGuesses="currentMaxGuesses"
+            :currentMaxGuesses="maxGuesses"
             :maxGuessesModel="customMaxGuessesInput"
             @update:maxGuessesModel="customMaxGuessesInput = $event"
             @apply-max-guesses="setMaxGuesses" 

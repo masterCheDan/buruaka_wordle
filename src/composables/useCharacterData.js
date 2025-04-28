@@ -18,14 +18,11 @@ export function useCharacterData() {
         try {
             // Assuming characters.json is in /public/data/
             const response = await fetch('data/students.json');
-            console.log('Fetching character data from:', response.url);
-            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             allCharacters.value = Object.values(data); // Convert object to array
-            console.log('Characters loaded:', allCharacters.value);
         } catch (e) {
             console.error("Failed to load character data:", e);
             error.value = 'Failed to load character data. Please try again later.';
