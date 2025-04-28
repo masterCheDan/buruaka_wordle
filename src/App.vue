@@ -109,7 +109,7 @@ function handleGuess(character) {
     />
   </div>
   <footer class="simple-footer">
-  <p>© 2025 masterCheDan. All rights reserved.</p>
+  <p>© 2025 masterCheDan. Licensed under the MIT License.</p>
   <p>
     请到
     <a href="https://github.com/masterCheDan/buruaka_wordle/issues" target="_blank" rel="noopener noreferrer">
