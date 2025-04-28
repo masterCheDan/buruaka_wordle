@@ -19,7 +19,7 @@ export const schoolMap = {
 };
 
 export const tacticRoleMap = {
-    'Supporter': '支援',
+    'Supporter': '辅助',
     'Tanker': '坦克',
     'DamageDealer': '输出',
     'Healer': '治疗',
