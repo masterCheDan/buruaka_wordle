@@ -131,11 +131,6 @@ export function useGameLogic() {
                 feedback[field] = 'incorrect';
                 return;
             }
-
-            if (field === 'fullName') {
-                feedback[field] = targetChar.Id === guessedChar.Id ? 'correct' : 'incorrect';
-            }
-
             if (guessValue === targetValue) {
                 feedback[field] = 'correct';
             } else {
@@ -152,6 +147,7 @@ export function useGameLogic() {
                 }
             }
         });
+        feedback.isCorrectCharacter = (guessedChar.Id === targetChar.Id);
         return feedback;
     }
 

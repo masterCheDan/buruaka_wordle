@@ -20,6 +20,11 @@ function getDisplayValue(guess, key) {
     return value !== undefined && value !== null ? value : '-';
 }
 
+// Function to get the class for the name cell
+function getNameCellClass(feedback) {
+    // Use the dedicated flag 'isCorrectCharacter'
+    return feedback.isCorrectCharacter ? 'cell correct' : 'cell incorrect';
+}
 </script>
 
 <template>
@@ -34,8 +39,7 @@ function getDisplayValue(guess, key) {
             </div>
         </div>
         <div v-for="(item, index) in guesses" :key="index" class="guess-row">
-            <div
-                :class="getCellClass(item.feedback[headers.find(h => h.key === 'school')?.name] === 'correct' && guesses.length > 0 && item.guess.id === guesses[0].guess.id ? 'correct' : 'incorrect')">
+            <div :class="getNameCellClass(item.feedback)"> 
                 {{ item.guess.fullName }}
             </div>
             <div v-for="header in headers" :key="header.key" :class="getCellClass(item.feedback[header.key])">
