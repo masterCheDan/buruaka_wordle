@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue';
 import Fuse from 'fuse.js';
 import { pinyin } from 'pinyin-pro'; // Import the pinyin library
-
 const props = defineProps({
     characters: { type: Array, required: true },
     disabled: { type: Boolean, default: false }
@@ -21,9 +20,8 @@ function generateSearchableStrings(char) {
     // Ensure FamilyName and Name exist
     const familyName = char.FamilyName || '';
     const Name = char.Name || '';
-    const specialNames = ['初音未来', '佐天泪子', '御坂美琴', '食蜂操祈'];
     // Concatenate full name
-    const fullName = specialNames.includes(char.Name) ? char.Name : `${familyName}${Name}`;
+    const fullName = getFullName(char); // Assuming this function is imported or defined elsewhere
 
     let searchablePinyin = '';
     if (fullName) {
@@ -132,6 +130,7 @@ watch(showDropdown, (isOpen) => {
 });
 
 import { onUnmounted } from 'vue';
+import { getFullName } from '../composables/useCharacterData';
 onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside, true);
 });
@@ -164,7 +163,8 @@ function handleImageError(event) {
                 class="dropdown-char-icon"
                 @error="handleImageError"
             />
-            <div v-else class="dropdown-char-icon-placeholder"></div> <span class="char-name" @click.stop="emit('preview', char)"> {{ char.fullName }}
+            <div v-else class="dropdown-char-icon-placeholder"></div>
+            <span class="char-name" @click.stop="emit('preview', char)"> {{ char.fullName }}
                 <small v-if="char.school"> ({{ char.school }})</small>
             </span>
             <button @click.stop="selectCharacterForGuess(char)" :disabled="disabled">猜！</button>
@@ -176,47 +176,3 @@ function handleImageError(event) {
       </div>
     </div>
   </template>
-  
-  <style scoped> /* Added scoped styles for the icon */
-  .dropdown-list li {
-      /* Ensure flex alignment */
-      display: flex;
-      align-items: center;
-      padding: 5px 10px; /* Adjust padding */
-  }
-  
-  .dropdown-char-icon {
-      width: 32px; /* Adjust size */
-      height: 32px;
-      border-radius: 50%; /* Make it circular */
-      margin-right: 8px;
-      object-fit: cover; /* Ensure image covers the area nicely */
-      flex-shrink: 0;
-  }
-  .dropdown-char-icon-placeholder {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      margin-right: 8px;
-      background-color: #eee; /* Simple gray placeholder */
-      flex-shrink: 0;
-  }
-  
-  .char-name {
-      flex-grow: 1;
-      margin-right: 10px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-  }
-  .char-name:hover {
-      text-decoration: underline;
-      cursor: default; /* No preview click action needed now */
-  }
-  /* Ensure button style is okay */
-  .dropdown-list li button {
-    padding: 4px 8px;
-    font-size: 0.8em;
-    flex-shrink: 0;
-  }
-  </style>

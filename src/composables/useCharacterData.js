@@ -10,6 +10,18 @@ const DEFAULT_SERVER = 'jp'; // Default server
 // Add state for the selected server
 const selectedServer = ref(localStorage.getItem(SERVER_STORAGE_KEY) || DEFAULT_SERVER);
 
+export function getFullName(char) {
+    const specialNames
+        = [
+            '初音未来',
+            '佐天泪子',
+            '御坂美琴',
+            '食蜂操祈'
+        ];
+    // Concatenate full name
+    return specialNames.includes(char.Name) ? char.Name : `${char.FamilyName}${char.Name}`;
+}
+
 export function useCharacterData() {
     // Function to set server and trigger reload
     async function setServer(serverAbbr) {

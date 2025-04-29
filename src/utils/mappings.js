@@ -44,6 +44,27 @@ export const armorTypeMap = {
 
 // ... export other maps ...
 
+export const bulletTypeColorClassMap = {
+    'Explosion': 'bullet-explosion',
+    'Pierce': 'bullet-pierce',
+    'Mystic': 'bullet-mystic',
+    'Sonic': 'bullet-sonic'
+};
+export const armorTypeColorClassMap = {
+    'LightArmor': 'armor-light',
+    'HeavyArmor': 'armor-heavy',
+    'Unarmed': 'armor-unarmed',
+    'ElasticArmor': 'armor-elastic'
+};
+
+export function getAttributeColorClass(key, value) {
+    switch (key) {
+        case 'BulletType': return bulletTypeColorClassMap[value] || '';
+        case 'ArmorType': return armorTypeColorClassMap[value] || '';
+        default: return '';
+    }
+}
+
 // Optional: A central function to apply mappings
 export function mapValue(key, value) {
     if (value === undefined || value === null) return '-';
@@ -56,5 +77,13 @@ export function mapValue(key, value) {
         // ... other cases using imported maps ...
         case 'StarGrade': return typeof value === 'number' ? `${value}★` : value;
         default: return value;
+    }
+}
+
+export function getIconPath(key, value) {
+    switch (key) {
+        case 'School': return `images/schoolicon/School_Icon_${String(value).toUpperCase()}_W.png`;
+        case 'TacticRole': return `images/roleIcon/Role_${value}.png`;
+        default: return '';
     }
 }

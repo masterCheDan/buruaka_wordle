@@ -174,7 +174,7 @@ input[type="text"] {
     display: grid;
     /* Adjust the number of columns based on GuessHistoryTable headers + Name */
     /* Example: Name + 8 fields = 9 columns */
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: 3.5fr 2.2fr 1.2fr 1fr 1.8fr repeat(4, 1.5fr);
     /* Or define specific widths if needed: */
     /* grid-template-columns: 1.5fr repeat(8, 1fr); /* Make Name column wider */
     /* text-align: center; */
@@ -206,7 +206,7 @@ input[type="text"] {
     overflow-wrap: normal;
     /* Override any global break-word */
     border-right: 1px solid #dee2e6;
-    text-align: left;
+    text-align: center;
     /* CHANGED from center */
 
 
@@ -215,6 +215,10 @@ input[type="text"] {
     overflow: hidden;
     text-overflow: ellipsis;
     /* ----------------------- */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header-row div:last-child,
@@ -309,4 +313,242 @@ input[type="text"] {
 
 .simple-footer a:hover {
     text-decoration: underline;
+}
+
+
+/* ... (other scoped styles) ... */
+.inline-table-icon {
+    width: 2em;
+    /* Size relative to font */
+    height: 2em;
+    margin-right: 4px;
+    /* Space between icon and text */
+    vertical-align: middle;
+    /* Align icon with text */
+    object-fit: contain;
+    filter: brightness(0) saturate(100%);
+}
+
+/* Ensure flex alignment within cell if needed */
+.guess-row div,
+.header-row div {
+    display: flex;
+    /* Use flex to align icon and text */
+    align-items: center;
+    /* Center items vertically */
+    /* padding, font-size, etc. from global styles or here */
+    /* text-align: left; is good for flex */
+}
+
+.guess-row div span,
+.header-row div span {
+    /* Allow text to take remaining space if needed */
+    flex-grow: 1;
+    /* Prevent wrapping/ellipsis if span needs it instead of div */
+    /* white-space: nowrap; */
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
+}
+
+.bullet-explosion {
+    color: #dc3545;
+    /* Red */
+}
+
+.bullet-pierce {
+    color: #ffc107;
+    /* Yellow */
+}
+
+.bullet-mystic {
+    color: #0d6efd;
+    /* Blue */
+}
+
+.bullet-sonic {
+    color: #0dcaf0;
+    /* Cyan */
+}
+
+.armor-light {
+    color: #dc3545;
+    /* Red */
+}
+
+.armor-heavy {
+    color: #ffc107;
+    /* Yellow */
+}
+
+.armor-unarmed {
+    color: #0d6efd;
+    /* Blue */
+}
+
+.armor-elastic {
+    color: #6f42c1;
+    /* Purple */
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+    opacity: 0;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    /* Adjust max width */
+    max-height: 90vh;
+    /* Limit height */
+    overflow-y: auto;
+    /* Allow scrolling for content */
+    text-align: center;
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    /* Reset button padding */
+}
+
+.modal-close-button:hover {
+    color: #333;
+}
+
+
+h2 {
+    margin-top: 0;
+    color: #007bff;
+    /* Or style based on win/loss */
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin-bottom: 15px;
+}
+
+.modal-details {
+    margin-bottom: 25px;
+}
+
+.modal-char-image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: block;
+    /* Center image easily */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.attributes-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    max-width: 300px;
+    /* Limit width for better reading */
+    margin: 0 auto;
+    /* Center the list block */
+    font-size: 0.95em;
+}
+
+.attributes-list li {
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.attributes-list li strong {
+    color: #555;
+    margin-right: 5px;
+}
+
+.modal-new-game-button {
+    /* Use global button styles or define specific ones */
+    padding: 10px 20px;
+    font-size: 1.1em;
+}
+
+.dropdown-list li {
+    /* Ensure flex alignment */
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    /* Adjust padding */
+}
+
+.dropdown-char-icon {
+    width: 32px;
+    /* Adjust size */
+    height: 32px;
+    border-radius: 50%;
+    /* Make it circular */
+    margin-right: 8px;
+    object-fit: cover;
+    /* Ensure image covers the area nicely */
+    flex-shrink: 0;
+}
+
+.dropdown-char-icon-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: #eee;
+    /* Simple gray placeholder */
+    flex-shrink: 0;
+}
+
+.char-name {
+    flex-grow: 1;
+    margin-right: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.char-name:hover {
+    text-decoration: underline;
+    cursor: default;
+    /* No preview click action needed now */
+}
+
+/* Ensure button style is okay */
+.dropdown-list li button {
+    padding: 4px 8px;
+    font-size: 0.8em;
+    flex-shrink: 0;
 }

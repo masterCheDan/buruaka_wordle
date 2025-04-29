@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 // Assuming you created this utility or import maps directly
 import { mapValue } from '@/utils/mappings'; // Adjust path as needed
+import { getFullName } from '../composables/useCharacterData';
 
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
@@ -42,12 +43,6 @@ function requestNewGame() {
     emit('new-game'); // Parent will handle closing + starting new game
 }
 
-function fullName(char) {
-  const specialNames = ['初音未来', '佐天泪子', '御坂美琴', '食蜂操祈'];
-    // Concatenate full name
-  return specialNames.includes(char.Name) ? char.Name : `${char.FamilyName}${char.Name}`;
-}
-
 </script>
 
 <template>
@@ -58,7 +53,7 @@ function fullName(char) {
         <h2>{{ title }}</h2>
 
         <div v-if="targetCharacter" class="modal-details">
-          <h3>正确答案：{{ fullName(targetCharacter) }}</h3>
+          <h3>正确答案：{{ getFullName(targetCharacter) }}</h3>
           <img
             v-if="targetCharacter.Id"
             :src="`images/students/${targetCharacter.Id}.webp`"
@@ -80,105 +75,3 @@ function fullName(char) {
     </div>
   </transition>
 </template>
-
-<style scoped>
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 30px 40px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
-  width: 90%;
-  max-width: 500px; /* Adjust max width */
-  max-height: 90vh; /* Limit height */
-  overflow-y: auto; /* Allow scrolling for content */
-  text-align: center;
-}
-
-.modal-close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: #aaa;
-  cursor: pointer;
-  line-height: 1;
-   padding: 0; /* Reset button padding */
-}
- .modal-close-button:hover {
-     color: #333;
- }
-
-
-h2 {
-  margin-top: 0;
-  color: #007bff; /* Or style based on win/loss */
-  margin-bottom: 20px;
-}
- h3 {
-     margin-bottom: 15px;
- }
-
-.modal-details {
-    margin-bottom: 25px;
-}
-
-.modal-char-image {
-    max-width: 120px;
-    max-height: 120px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    display: block; /* Center image easily */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.attributes-list {
-    list-style: none;
-    padding: 0;
-    text-align: left;
-    max-width: 300px; /* Limit width for better reading */
-    margin: 0 auto; /* Center the list block */
-    font-size: 0.95em;
-}
-.attributes-list li {
-    margin-bottom: 8px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
- .attributes-list li strong {
-     color: #555;
-     margin-right: 5px;
- }
-
-.modal-new-game-button {
-  /* Use global button styles or define specific ones */
-  padding: 10px 20px;
-  font-size: 1.1em;
-}
-</style>

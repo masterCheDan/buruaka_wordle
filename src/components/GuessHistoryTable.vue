@@ -1,5 +1,6 @@
 <script setup>
-import { mapValue } from '@/utils/mappings';  
+import { mapValue,getAttributeColorClass,getIconPath } from '@/utils/mappings';  
+import { getFullName } from '../composables/useCharacterData';
 
 defineProps({
     guesses: { type: Array, required: true }, // Array of { guess: Character, feedback: FeedbackObject }
@@ -40,10 +41,25 @@ function getNameCellClass(feedback) {
         </div>
         <div v-for="(item, index) in guesses" :key="index" class="guess-row">
             <div :class="getNameCellClass(item.feedback)"> 
-                {{ item.guess.fullName }}
+                <img
+                v-if="item.guess.Id"
+                :src="`images/students/${item.guess.Id}.webp`"
+                :alt="item.guess.fullName"
+                class="dropdown-char-icon"
+                @error="handleImageError"
+            />
+            <span>{{ item.guess.fullName }}</span>
             </div>
-            <div v-for="header in headers" :key="header.key" :class="getCellClass(item.feedback[header.key])">
-                {{ getDisplayValue(item.guess, header.key) }}
+            <div v-for="header in headers"
+                :key="header.key"
+                :class="[getCellClass(item.feedback[header.key]), getAttributeColorClass(header.key, item.guess[header.key])]">
+                <img
+                    v-if="getIconPath(header.key, item.guess[header.key])"
+                    :src="getIconPath(header.key, item.guess[header.key])"
+                    :alt="header.label"
+                    class="inline-table-icon"
+                />
+                <span>{{ getDisplayValue(item.guess, header.key) }}</span>
             </div>
         </div>
     </div>
