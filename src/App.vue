@@ -12,7 +12,14 @@ import ResultModal from './components/ResultModal.vue';
 import { mapValue } from '@/utils/mappings.js';
 
 // Setup Composables
-const { allCharacters, isLoading, error } = useCharacterData();
+const {
+    allCharacters,
+    isLoading,
+    error,
+    selectedServer, // Get the readonly selected server state
+    setServer       // Get the function to change server
+} = useCharacterData();
+
 const {
   guesses,
   gameStatus, // 'loading', 'playing', 'won', 'lost', 'error'
@@ -29,6 +36,7 @@ const {
   setMaxGuesses
 } = useGameLogic();
 
+const isChangingServer = ref(false); // Flag to indicate if the server is being changed
 const isModalOpen = ref(false);
 
 watch(maxGuesses,(newVal)=>{
@@ -55,11 +63,57 @@ function handleGuess(character) {
   submitGuess(character);
 }
 
+async function changeServer(serverAbbr) {
+    if (selectedServer.value === serverAbbr || isChangingServer.value) {
+        return; // Don't do anything if already selected or already changing
+    }
+    console.log(`Requesting server change to ${serverAbbr}`);
+    isChangingServer.value = true;
+    const success = await setServer(serverAbbr);
+    if (success) {
+        // Important: Reset the game state AFTER triggering the data load
+        startNewGame();
+        console.log("Game reset for new server.");
+    } else {
+        // Handle failure (e.g., show error message)
+        console.error("Failed to set server.");
+    }
+    isChangingServer.value = false;
+}
+
 </script>
 
 <template>
   <div>
     <img src="/images/logo/title.png" alt="Logo" class="title-logo" />
+    
+    <div class="server-selection">
+      <span>选择服务器:</span>
+      <button
+        @click="changeServer('jp')"
+        :disabled="selectedServer === 'jp' || isChangingServer"
+        :class="{ active: selectedServer === 'jp' }"
+      >
+        日服
+      </button>
+      <button
+        @click="changeServer('gl')"
+        :disabled="selectedServer === 'gl' || isChangingServer"
+        :class="{ active: selectedServer === 'gl' }"
+      >
+        国际服
+      </button>
+      <button
+        @click="changeServer('cn')"
+        :disabled="selectedServer === 'cn' || isChangingServer"
+        :class="{ active: selectedServer === 'cn' }"
+      >
+        国服
+      </button>
+      <span v-if="isChangingServer || (isLoading && allCharacters.length === 0)" class="loading-indicator">
+          (加载中...)
+      </span>
+    </div>
 
     <div v-if="error" class="result-area failure">
       {{ error }}
@@ -78,9 +132,9 @@ function handleGuess(character) {
         />
         </div>
 
-      <div v-if="isLoading && gameStatus === 'loading'">
-        正在加载...
-      </div>
+        <div v-if="isLoading && allCharacters.length === 0">
+            正在加载角色数据...
+        </div>
 
       <div v-if="gameStatus !== 'loading' && gameStatus !== 'error'">
         <ImagePreview :character="previewCharacter" :altText="isGameOver ? '答案角色' : '预览角色'" />
@@ -119,3 +173,37 @@ function handleGuess(character) {
   </p>
 </footer>
 </template>
+
+<style scoped> /* Add styles for server selection */
+.server-selection {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.server-selection span {
+    font-weight: bold;
+    margin-right: 5px;
+}
+.server-selection button {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    background-color: #6c757d; /* Default inactive color */
+}
+.server-selection button.active {
+    background-color: #007bff; /* Active color */
+    font-weight: bold;
+}
+.server-selection button:disabled:not(.active) {
+    background-color: #adb5bd; /* Disabled, non-active */
+    cursor: not-allowed;
+}
+ .loading-indicator {
+     font-style: italic;
+     color: #6c757d;
+ }
+</style>

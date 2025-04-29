@@ -31,7 +31,13 @@ const fieldNameMap = {
 };
 
 export function useGameLogic() {
-    const { allCharacters, isLoading: dataIsLoading } = useCharacterData();
+    const {
+        allCharacters,
+        isLoading,
+        error,
+        selectedServer, // Get the readonly selected server state
+        setServer       // Get the function to change server
+    } = useCharacterData();
 
     // --- Core State ---
     const targetCharacter = ref(null);
@@ -218,7 +224,7 @@ export function useGameLogic() {
     loadSettings();
 
     // Watch for data loading to finish before starting the first game
-    watch(dataIsLoading, (loading) => {
+    watch(isLoading, (loading) => {
         if (!loading && allCharacters.value.length > 0) {
             // Only start if not already started or finished
             if (gameStatus.value === 'loading') {
@@ -231,7 +237,7 @@ export function useGameLogic() {
     });
 
     // Initial check in case data is already loaded (e.g., hot reload)
-    if (!dataIsLoading.value && allCharacters.value.length > 0 && gameStatus.value === 'loading') {
+    if (!isLoading.value && allCharacters.value.length > 0 && gameStatus.value === 'loading') {
         startNewGame();
     };
 

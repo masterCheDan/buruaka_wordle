@@ -1,31 +1,55 @@
-import { ref } from 'vue';
+import { readonly, ref } from 'vue';
 
 // State should be outside the function to be shared across components
 const allCharacters = ref([]);
 const isLoading = ref(false);
 const error = ref(null);
+const SERVER_STORAGE_KEY = 'baGuessr_selectedServer';
+const DEFAULT_SERVER = 'jp'; // Default server
+
+// Add state for the selected server
+const selectedServer = ref(localStorage.getItem(SERVER_STORAGE_KEY) || DEFAULT_SERVER);
 
 export function useCharacterData() {
+    // Function to set server and trigger reload
+    async function setServer(serverAbbr) {
+        if (!['jp', 'gl', 'cn'].includes(serverAbbr)) {
+            console.error("Invalid server selected:", serverAbbr);
+            return false; // Indicate failure
+        }
+        if (selectedServer.value === serverAbbr && allCharacters.value.length > 0) {
+            return true; // Already loaded this server's data
+        }
+
+        console.log(`Setting server to: ${serverAbbr}`);
+        selectedServer.value = serverAbbr;
+        localStorage.setItem(SERVER_STORAGE_KEY, serverAbbr);
+        // Clear existing data to force reload effect
+        allCharacters.value = [];
+        // Trigger loading for the new server
+        await loadCharacters(); // loadCharacters now implicitly uses selectedServer
+        return true; // Indicate success
+    }
 
     async function loadCharacters() {
-        // Prevent reloading if already loaded or loading
-        if (allCharacters.value.length > 0 || isLoading.value) {
-            return;
-        }
+        // Construct file path based on selected server
+        const dataPath = `data/students_${selectedServer.value}.json`;
+        console.log(`Loading data from: ${dataPath}`);
 
         isLoading.value = true;
         error.value = null;
         try {
-            // Assuming characters.json is in /public/data/
-            const response = await fetch('data/students.json');
+            const response = await fetch(dataPath);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status} for ${dataPath}`);
             }
-            const data = await response.json();
-            allCharacters.value = Object.values(data); // Convert object to array
+            // Ensure previous data is cleared before assigning new data
+            const temp = await response.json();
+            allCharacters.value = Object.values(temp);
+            console.log(`Characters loaded for server ${selectedServer.value}:`, allCharacters.value.length);
         } catch (e) {
             console.error("Failed to load character data:", e);
-            error.value = 'Failed to load character data. Please try again later.';
+            error.value = `未能加载 <span class="math-inline">\{selectedServer\.value\.toUpperCase\(\)\} 服务器数据 \(</span>{dataPath})。请检查文件是否存在或稍后再试。`;
             allCharacters.value = []; // Clear any partial data
         } finally {
             isLoading.value = false;
@@ -50,6 +74,8 @@ export function useCharacterData() {
         allCharacters,
         isLoading,
         error,
+        selectedServer: readonly(selectedServer), // Expose as readonly
+        setServer,// Expose function to set server
         loadCharacters, // Expose if manual reload is needed
         getCharacterById
     };
