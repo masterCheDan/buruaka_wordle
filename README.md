@@ -11,7 +11,7 @@ A Wordle-inspired web game where you guess characters from the mobile game Blue 
   * **Incorrect:** Attribute does not match (Red background).
 * **Smart Search:** Search for characters using:
   * Chinese Characters (Hanzi)
-  * Hanyu Pinyin (e.g., "yuka" or "hayase yuuka")
+  * Hanyu Pinyin (e.g., "zaolaiyouxiang" or "zlyx")
 * **Autocomplete Dropdown:** Real-time search suggestions with character icons displayed inline.
 * **Guess History:** View your previous guesses and their feedback in a clear, non-wrapping table format.
 * **Hints:** Receive a hint about a non-obvious attribute after reaching 50% of your maximum guesses.
