@@ -5,7 +5,7 @@ A Wordle-inspired web game where you guess characters from the mobile game Blue 
 ## Features
 
 * **Character Guessing:** Guess Blue Archive students based on gameplay attributes.
-* **Attribute Feedback:** Receive feedback for each guess across multiple attributes (School, Rarity, Role, Position, Attack Type, Armor Type, Height, etc.).
+* **Attribute Feedback:** Receive feedback for each guess across multiple attributes (School, Bullet Type, Armor Type, Height, etc.).
   * **Correct:** Attribute matches the target (Green background).
   * **Close:** Numeric attribute is close to the target (Yellow background).
   * **Incorrect:** Attribute does not match (Red background).
@@ -32,8 +32,13 @@ A Wordle-inspired web game where you guess characters from the mobile game Blue 
 
 ``` txt
 ├── public/
-│   └── data/
-│       └── students.json  # Character data source
+│   ├── data/
+│   │   └── students.json   # Character data source
+│   └── images/
+│       ├── logo            # Buruaka Wrodle logo
+│       ├── roleIcon        # Icon of roles
+│       ├── schoolIcon      # Icon of schools
+│       └── stuednts        # Images of students
 ├── src/
 │   ├── assets/             # CSS, static assets
 │   ├── components/         # Reusable Vue components (Table, Modal, Search, etc.)
@@ -85,7 +90,7 @@ A Wordle-inspired web game where you guess characters from the mobile game Blue 
 
 ## Data Source
 
-The game relies on the `public/data/characters.json` file, which comes from the project [SchaleDB](https://github.com/SchaleDB/SchaleDB). In the meanwhile, all the students' images are all from this repository too. Thanks for [lonqie](https://github.com/lonqie)!
+The game relies on the `public/data/characters.json` file, which comes from the project [SchaleDB](https://github.com/SchaleDB/SchaleDB). In the meanwhile, all the students' images are all from this repository too. Thanks to [lonqie](https://github.com/lonqie)!
 
 **Note:** This data needs to be manually maintained and updated as new characters are released or information changes in Blue Archive. Ensure internal identifiers used (like "Trinity") match those used in the mapping configuration within the code (`src/utils/mappings.js` or `src/components/GuessHistoryTable.vue`).
 
