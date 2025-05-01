@@ -573,7 +573,7 @@ h3 {
 .settings {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     /* Spacing between setting elements */
     margin-top: 5px;
     /* Add some space when wrapping */
@@ -582,6 +582,18 @@ h3 {
 .settings label {
     font-size: 0.9em;
     margin-right: 5px;
+}
+
+.hint-toggle-button {
+    padding: 4px 8px;
+    font-size: 0.9em;
+    /* Optional: Add specific style or use default button style */
+    background-color: #6c757d;
+    /* Example color */
+}
+
+.hint-toggle-button:hover {
+    background-color: #5a6268;
 }
 
 .max-guesses-input {
@@ -600,3 +612,43 @@ h3 {
 }
 
 /* Adjust button styles from global if needed */
+
+.server-selection {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.server-selection span {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.server-selection button {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    background-color: #6c757d;
+    /* Default inactive color */
+}
+
+.server-selection button.active {
+    background-color: #007bff;
+    /* Active color */
+    font-weight: bold;
+}
+
+.server-selection button:disabled:not(.active) {
+    background-color: #adb5bd;
+    /* Disabled, non-active */
+    cursor: not-allowed;
+}
+
+.loading-indicator {
+    font-style: italic;
+    color: #6c757d;
+}

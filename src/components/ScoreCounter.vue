@@ -1,21 +1,33 @@
 <script setup>
-import { ref,watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
   total: { type: Number, required: true },
   won: { type: Number, required: true },
   // Use different names to avoid confusion with internal refs if needed
   currentMaxGuesses: { type: Number, required: true },
-  maxGuessesModel: { type: [Number, String], required: true } // v-model for the input
+  maxGuessesModel: { type: [Number, String], required: true }, // v-model for the input
+  hintsEnabled: { type: Boolean, required: true } // Add prop for hint status
 });
 
-const emit = defineEmits(['new-game', 'update:maxGuessesModel', 'apply-max-guesses']);
+const emit = defineEmits([
+  'new-game',
+  'update:maxGuessesModel',
+  'apply-max-guesses',
+  'toggle-hints' 
+]);
+
+const hintToggleButtonText = computed(() => {
+    return props.hintsEnabled ? '禁用提示' : '启用提示';
+});
 
 // Local ref for input to handle v-model update emission
 const localMaxGuessesInput = ref(props.maxGuessesModel);
+
 watch(() => props.maxGuessesModel, (newVal) => {
     localMaxGuessesInput.value = newVal; // Sync from parent
 });
+
 function updateModel(event) {
     emit('update:maxGuessesModel', event.target.value);
 }
@@ -45,6 +57,11 @@ function applySetting() {
         class="max-guesses-input"
       />
       <button @click="applySetting" class="apply-button">应用</button>
+
+      <button @click="$emit('toggle-hints')" class="hint-toggle-button">
+          {{ hintToggleButtonText }}
+      </button>
+
       <button @click="emit('new-game')">新游戏</button>
     </div>
   </div>

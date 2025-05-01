@@ -7,6 +7,7 @@ const HINT_TURN_PERCENTAGE = 0.5; // Show hint after 50% of guesses
 const SCORE_STORAGE_KEY_TOTAL = 'baGuessr_totalGames';
 const SCORE_STORAGE_KEY_WON = 'baGuessr_gamesWon';
 const MAX_GUESSES_STORAGE_KEY = 'baGuessr_maxGuesses';
+const HINTS_ENABLED_STORAGE_KEY = 'baGuessr_hintsEnabled'; // Key for hint setting
 
 // --- Fields Configuration ---
 const fieldsToCompare = [
@@ -17,7 +18,7 @@ const fieldsToCompare = [
     { name: 'WeaponType', type: 'exact', label: '武器类型' },
     { name: 'BulletType', type: 'exact', label: '攻击属性' },
     { name: 'ArmorType', type: 'exact', label: '防御属性' },
-    { name: 'CharHeightMetric', type: 'numeric', threshold: 5, label: '身高(cm)' },
+    { name: 'CharHeightMetric', type: 'numeric', threshold: 5, label: '身高' },
     // Add more fields as needed from your JSON
 ];
 
@@ -31,13 +32,7 @@ const fieldNameMap = {
 };
 
 export function useGameLogic() {
-    const {
-        allCharacters,
-        isLoading,
-        error,
-        selectedServer, // Get the readonly selected server state
-        setServer       // Get the function to change server
-    } = useCharacterData();
+    const { availableCharacters, isLoading: dataIsLoading, error: dataError } = useCharacterData();
 
     // --- Core State ---
     const targetCharacter = ref(null);
@@ -46,6 +41,7 @@ export function useGameLogic() {
     const hint = ref(null);
     const maxGuesses = ref(DEFAULT_MAX_GUESSES); // Now a ref
     const customMaxGuessesInput = ref(maxGuesses.value); // Separate ref for the input field
+    const hintsEnabled = ref(true); // New state for hint toggle, default true
 
 
     // --- Score State ---
@@ -77,8 +73,10 @@ export function useGameLogic() {
         }
         maxGuesses.value = initialMax;
         customMaxGuessesInput.value = initialMax; // Sync input ref
+        const savedHintsEnabled = localStorage.getItem(HINTS_ENABLED_STORAGE_KEY);
+        hintsEnabled.value = savedHintsEnabled !== null ? JSON.parse(savedHintsEnabled) : true;
         // --- DEBUG LOG ---
-        console.log('[useGameLogic] loadSettings: maxGuesses initialized to', maxGuesses.value);
+        console.log('[useGameLogic] loadSettings: maxGuesses=', maxGuesses.value, 'hintsEnabled=', hintsEnabled.value);
     }
 
     function setMaxGuesses(newValue) {
@@ -101,6 +99,17 @@ export function useGameLogic() {
         }
     }
 
+    // New function to toggle hints
+    function toggleHints() {
+        hintsEnabled.value = !hintsEnabled.value; // Flip the boolean
+        localStorage.setItem(HINTS_ENABLED_STORAGE_KEY, JSON.stringify(hintsEnabled.value));
+        console.log('[useGameLogic] toggleHints: hintsEnabled set to', hintsEnabled.value);
+        // If hints are disabled, clear any existing hint for the current game
+        if (!hintsEnabled.value) {
+            hint.value = null;
+        }
+    }
+
     function incrementTotalGames() {
         totalGames.value++;
         localStorage.setItem(SCORE_STORAGE_KEY_TOTAL, totalGames.value.toString());
@@ -112,12 +121,18 @@ export function useGameLogic() {
     }
 
     function selectTargetCharacter() {
-        if (allCharacters.value.length > 0) {
-            const randomIndex = Math.floor(Math.random() * allCharacters.value.length);
-            targetCharacter.value = allCharacters.value[randomIndex];
+        // Ensure availableCharacters is populated and not empty
+        if (availableCharacters.value && availableCharacters.value.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableCharacters.value.length);
+            targetCharacter.value = availableCharacters.value[randomIndex];
+            console.log("[useGameLogic] Target selected:", targetCharacter.value?.Name, `(from ${availableCharacters.value.length} available)`);
         } else {
-            console.error("Cannot select target character, data not loaded.");
-            gameStatus.value = 'error'; // Or handle appropriately
+            console.error("[useGameLogic] Cannot select target character, available character list is empty or not ready.");
+            targetCharacter.value = null;
+            // Potentially set gameStatus to error or waiting state if data is expected but missing
+            if (!dataIsLoading.value) { // If not loading but still no characters
+                gameStatus.value = 'error_no_chars'; // A specific error state
+            }
         }
     }
 
@@ -158,6 +173,11 @@ export function useGameLogic() {
     }
 
     function checkAndShowHint() {
+        // Check if hints are enabled and if the game is in the right state to show a hint
+        if (!hintsEnabled.value) {
+            // console.log('[useGameLogic] Hints are disabled, skipping check.');
+            return; // Do nothing if hints are disabled
+        }
         if (guesses.value.length === hintTriggerTurn.value && gameStatus.value === 'playing' && !hint.value) {
             if (!targetCharacter.value) return;
 
@@ -203,18 +223,21 @@ export function useGameLogic() {
     function resetGame() {
         guesses.value = [];
         hint.value = null;
-        selectTargetCharacter(); // Select new target
+        selectTargetCharacter(); // Select new target from current available list
+        // Set game status based on whether a target could be selected
         if (targetCharacter.value) {
             gameStatus.value = 'playing';
+        } else if (dataIsLoading.value) {
+            gameStatus.value = 'loading'; // Still loading data
         } else {
-            // Handle case where character selection failed (data not ready?)
-            gameStatus.value = 'error';
+            // If no target could be selected and not loading, something is wrong
+            gameStatus.value = 'error_no_chars';
         }
     }
 
     function startNewGame() {
-        if (gameStatus.value !== 'loading' && gameStatus.value !== 'error') {
-            incrementTotalGames(); // Increment total only when starting from a playable state
+        if (gameStatus.value !== 'loading' && gameStatus.value !== 'error' && gameStatus.value !== 'error_no_chars') {
+            incrementTotalGames();
         }
         resetGame();
     }
@@ -223,23 +246,38 @@ export function useGameLogic() {
 
     loadSettings();
 
-    // Watch for data loading to finish before starting the first game
-    watch(isLoading, (loading) => {
-        if (!loading && allCharacters.value.length > 0) {
-            // Only start if not already started or finished
-            if (gameStatus.value === 'loading') {
-                startNewGame(); // Start the very first game
-            }
-        } else if (!loading && allCharacters.value.length === 0) {
-            // Handle data loading error
-            gameStatus.value = 'error';
+    // Watch for the initial load/error state from useCharacterData
+    watch([dataIsLoading, dataError], ([loading, err]) => {
+        if (!loading && !err && gameStatus.value === 'loading') {
+            // Data loaded successfully, start the first game
+            console.log("[useGameLogic] Data loaded, starting initial game.");
+            startNewGame();
+        } else if (err) {
+            gameStatus.value = 'error'; // Reflect data loading error
         }
-    });
+    }, { immediate: true });
 
-    // Initial check in case data is already loaded (e.g., hot reload)
-    if (!isLoading.value && allCharacters.value.length > 0 && gameStatus.value === 'loading') {
-        startNewGame();
-    };
+    // Watch for changes in the *available* character list AFTER the initial load.
+    // This indicates a server switch occurred.
+    let initialLoadComplete = false;
+    watch(availableCharacters, (newChars, oldChars) => {
+        if (dataIsLoading.value) return; // Ignore changes during load
+
+        if (!initialLoadComplete && newChars.length > 0) {
+            initialLoadComplete = true;
+            console.log("[useGameLogic] Initial character list processed.");
+            return; // Don't reset on the very first population
+        }
+
+        // If list changes *after* initial load, it implies a server switch filter update.
+        // Check if the list content actually changed significantly (more robust than just length)
+        // For simplicity, we reset if the list reference changes and it's not the initial load.
+        if (initialLoadComplete && newChars !== oldChars) {
+            console.log("[useGameLogic] Available characters changed (server switch?), resetting game.");
+            startNewGame();
+        }
+    }, { deep: false }); // deep: false might be enough if the array reference changes
+
 
     return {
         // State
@@ -248,7 +286,9 @@ export function useGameLogic() {
         gameStatus,
         maxGuesses,
         customMaxGuessesInput, // For input binding
-        hint,
+        hintsEnabled,  // Expose the state
+
+        hint,          // Expose hint for display
         totalGames,
         gamesWon,
         comparisonHeaders, // Pass headers to table component
@@ -260,6 +300,7 @@ export function useGameLogic() {
         // Methods
         submitGuess,
         startNewGame,
-        setMaxGuesses
+        setMaxGuesses,
+        toggleHints   // Expose the toggle function
     };
 }

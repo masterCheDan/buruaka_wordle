@@ -13,40 +13,53 @@ import { mapValue } from '@/utils/mappings.js';
 
 // Setup Composables
 const {
-    allCharacters,
-    isLoading,
-    error,
-    selectedServer, // Get the readonly selected server state
-    setServer       // Get the function to change server
+    isLoading: dataIsLoading, // Rename to avoid clash if needed
+    error: dataError,
+    selectedServer,
+    setServer,
+    availableCharacters // Use the filtered list
 } = useCharacterData();
 
 const {
-  guesses,
-  gameStatus, // 'loading', 'playing', 'won', 'lost', 'error'
-  hint,
-  totalGames,
-  gamesWon,
-  isGameOver,
-  submitGuess,
-  startNewGame,
-  targetCharacter, // Needed for final result display
-  comparisonHeaders, // Get headers for the table
-  maxGuesses,
-  customMaxGuessesInput,
-  setMaxGuesses
+    gameStatus,
+    startNewGame, // Need this
+    isGameOver,
+    guesses,
+    comparisonHeaders,
+    hintsEnabled,
+    hint,
+    targetCharacter, // For modal
+    // Score/Settings refs & methods
+    totalGames,
+    gamesWon,
+    maxGuesses,
+    customMaxGuessesInput,
+    setMaxGuesses,
+    toggleHints,
+    submitGuess // Need submitGuess here if called directly
 } = useGameLogic();
 
-const isChangingServer = ref(false); // Flag to indicate if the server is being changed
 const isModalOpen = ref(false);
 
-watch(maxGuesses,(newVal)=>{
-  console.log('maxGuesses changed:', newVal);
-})
+// Function called by UI buttons
+function changeServer(serverAbbr) {
+    if (selectedServer.value === serverAbbr) return;
 
-watch (gameStatus, (newStatus) => {
-  if (newStatus === 'won' || newStatus === 'lost') {
-    isModalOpen.value = true; // Open modal when game ends
-  }
+    // Update the server filter state
+    setServer(serverAbbr);
+    // Immediately reset the game logic for the new filter
+    startNewGame();
+}
+
+watch(gameStatus, (newStatus) => {
+    if (newStatus === 'won' || newStatus === 'lost') {
+        isModalOpen.value = true;
+    }
+    // Handle new error state
+    if (newStatus === 'error_no_chars') {
+         console.error("Game entered error state: No available characters for target selection.");
+         // Optionally show a user-friendly message instead of the main game UI
+    }
 });
 
 function closeModal(){
@@ -63,24 +76,6 @@ function handleGuess(character) {
   submitGuess(character);
 }
 
-async function changeServer(serverAbbr) {
-    if (selectedServer.value === serverAbbr || isChangingServer.value) {
-        return; // Don't do anything if already selected or already changing
-    }
-    console.log(`Requesting server change to ${serverAbbr}`);
-    isChangingServer.value = true;
-    const success = await setServer(serverAbbr);
-    if (success) {
-        // Important: Reset the game state AFTER triggering the data load
-        startNewGame();
-        console.log("Game reset for new server.");
-    } else {
-        // Handle failure (e.g., show error message)
-        console.error("Failed to set server.");
-    }
-    isChangingServer.value = false;
-}
-
 </script>
 
 <template>
@@ -88,79 +83,59 @@ async function changeServer(serverAbbr) {
     <img src="/images/logo/title.png" alt="Logo" class="title-logo" />
     
     <div class="server-selection">
-      <span>选择服务器:</span>
-      <button
-        @click="changeServer('jp')"
-        :disabled="selectedServer === 'jp' || isChangingServer"
-        :class="{ active: selectedServer === 'jp' }"
-      >
-        日服
-      </button>
-      <button
-        @click="changeServer('gl')"
-        :disabled="selectedServer === 'gl' || isChangingServer"
-        :class="{ active: selectedServer === 'gl' }"
-      >
-        国际服
-      </button>
-      <button
-        @click="changeServer('cn')"
-        :disabled="selectedServer === 'cn' || isChangingServer"
-        :class="{ active: selectedServer === 'cn' }"
-      >
-        国服
-      </button>
-      <span v-if="isChangingServer || (isLoading && allCharacters.length === 0)" class="loading-indicator">
-          (加载中...)
-      </span>
-    </div>
+       <span>选择服务器:</span>
+       <button @click="changeServer('jp')" :disabled="selectedServer === 'jp'" :class="{ active: selectedServer === 'jp' }">日服</button>
+       <button @click="changeServer('gl')" :disabled="selectedServer === 'gl'" :class="{ active: selectedServer === 'gl' }">国际服</button>
+       <button @click="changeServer('cn')" :disabled="selectedServer === 'cn'" :class="{ active: selectedServer === 'cn' }">国服</button>
+       <span v-if="dataIsLoading" class="loading-indicator">(加载中...)</span>
+     </div>
 
-    <div v-if="error" class="result-area failure">
-      {{ error }}
+     <div v-if="dataError" class="result-area failure">
+        {{ dataError }}
     </div>
+     <div v-else-if="gameStatus === 'error_no_chars'" class="result-area failure">
+         当前选择的服务器似乎没有可用的角色数据来开始游戏。
+     </div>
 
-    <div v-if="!error">
-      <div v-if="!error">
+    <div v-else>
         <ScoreCounter
-            :total="totalGames"
-            :won="gamesWon"
-            :currentMaxGuesses="maxGuesses"
-            :maxGuessesModel="customMaxGuessesInput"
+            v-if="gameStatus !== 'loading'"
+            :total="totalGames" 
+            :won="gamesWon" 
+            :current-max-guesses="maxGuesses"
+            :max-guesses-model="customMaxGuessesInput"
+            :hints-enabled="hintsEnabled"
             @update:maxGuessesModel="customMaxGuessesInput = $event"
-            @apply-max-guesses="setMaxGuesses" 
+            @apply-max-guesses="setMaxGuesses"
+            @toggle-hints="toggleHints"
             @new-game="startNewGame"
         />
+
+        <div v-if="dataIsLoading && availableCharacters.length === 0">
+            正在加载学生数据...
         </div>
 
-        <div v-if="isLoading && allCharacters.length === 0">
-            正在加载角色数据...
+        <div v-if="gameStatus === 'playing' || isGameOver">
+             <SearchInput
+                v-if="!isGameOver"
+                :characters="availableCharacters" :disabled="isGameOver"
+                @guess="handleGuess"
+             />
+             <div class="guess-history-wrapper">
+                 <GuessHistoryTable :guesses="guesses" :headers="comparisonHeaders" />
+             </div>
+             <HintArea :hint="hint" />
         </div>
 
-      <div v-if="gameStatus !== 'loading' && gameStatus !== 'error'">
-        <ImagePreview :character="previewCharacter" :altText="isGameOver ? '答案角色' : '预览角色'" />
-
-        <SearchInput v-if="!isGameOver" :characters="allCharacters" :disabled="isGameOver" @guess="handleGuess"
-          @preview="handlePreview" />
-
-        <GuessHistoryTable :guesses="guesses" :headers="comparisonHeaders" />
-
-        <HintArea :hint="hint" />
-
-        
-      </div>
-      <div v-if="gameStatus === 'error' && !isLoading" class="result-area failure">
-        游戏初始化失败，请检查数据文件或刷新页面。
-      </div>
+        <ResultModal
+            :is-open="isModalOpen"
+            :status="gameStatus"
+            :target-character="targetCharacter"
+            :comparison-headers="comparisonHeaders"
+            @close="closeModal"
+            @new-game="startNewGameAndCloseModal"
+        />
     </div>
-
-    <ResultModal
-        :is-open="isModalOpen"
-        :status="gameStatus"
-        :target-character="targetCharacter"
-        :comparison-headers="comparisonHeaders"
-        @close="closeModal"
-        @new-game="startNewGameAndCloseModal"
-    />
   </div>
   <footer class="simple-footer">
   <p>© 2025 masterCheDan. Licensed under the MIT License.</p>
@@ -173,37 +148,3 @@ async function changeServer(serverAbbr) {
   </p>
 </footer>
 </template>
-
-<style scoped> /* Add styles for server selection */
-.server-selection {
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.server-selection span {
-    font-weight: bold;
-    margin-right: 5px;
-}
-.server-selection button {
-    padding: 5px 10px;
-    font-size: 0.9em;
-    background-color: #6c757d; /* Default inactive color */
-}
-.server-selection button.active {
-    background-color: #007bff; /* Active color */
-    font-weight: bold;
-}
-.server-selection button:disabled:not(.active) {
-    background-color: #adb5bd; /* Disabled, non-active */
-    cursor: not-allowed;
-}
- .loading-indicator {
-     font-style: italic;
-     color: #6c757d;
- }
-</style>
