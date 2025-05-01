@@ -33,7 +33,7 @@ A Wordle-inspired web game where you guess characters from the mobile game Blue 
 ``` txt
 ├── public/
 │   └── data/
-│       └── characters.json  # Character data source
+│       └── students.json  # Character data source
 ├── src/
 │   ├── assets/             # CSS, static assets
 │   ├── components/         # Reusable Vue components (Table, Modal, Search, etc.)
