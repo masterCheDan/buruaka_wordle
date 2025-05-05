@@ -64,9 +64,8 @@ export function useGameLogic() {
         if (savedMax) {
             const parsedMax = parseInt(savedMax);
             // Validate loaded value
-            if (!isNaN(parsedMax) && parsedMax > 0 && parsedMax <= 20) {
-                initialMax = parsedMax;
-            } else {
+            if (!isNaN(parsedMax) && parsedMax > 0 && parsedMax <= 20) initialMax = parsedMax;
+            else {
                 console.warn(`Invalid maxGuesses value found in localStorage (${savedMax}), using default.`);
                 localStorage.removeItem(MAX_GUESSES_STORAGE_KEY); // Remove invalid value
             }
@@ -75,8 +74,6 @@ export function useGameLogic() {
         customMaxGuessesInput.value = initialMax; // Sync input ref
         const savedHintsEnabled = localStorage.getItem(HINTS_ENABLED_STORAGE_KEY);
         hintsEnabled.value = savedHintsEnabled !== null ? JSON.parse(savedHintsEnabled) : true;
-        // --- DEBUG LOG ---
-        console.log('[useGameLogic] loadSettings: maxGuesses=', maxGuesses.value, 'hintsEnabled=', hintsEnabled.value);
     }
 
     function setMaxGuesses(newValue) {
@@ -103,7 +100,6 @@ export function useGameLogic() {
     function toggleHints() {
         hintsEnabled.value = !hintsEnabled.value; // Flip the boolean
         localStorage.setItem(HINTS_ENABLED_STORAGE_KEY, JSON.stringify(hintsEnabled.value));
-        console.log('[useGameLogic] toggleHints: hintsEnabled set to', hintsEnabled.value);
         // If hints are disabled, clear any existing hint for the current game
         if (!hintsEnabled.value) {
             hint.value = null;
@@ -125,7 +121,6 @@ export function useGameLogic() {
         if (availableCharacters.value && availableCharacters.value.length > 0) {
             const randomIndex = Math.floor(Math.random() * availableCharacters.value.length);
             targetCharacter.value = availableCharacters.value[randomIndex];
-            console.log("[useGameLogic] Target selected:", targetCharacter.value?.Name, `(from ${availableCharacters.value.length} available)`);
         } else {
             console.error("[useGameLogic] Cannot select target character, available character list is empty or not ready.");
             targetCharacter.value = null;
@@ -174,10 +169,8 @@ export function useGameLogic() {
 
     function checkAndShowHint() {
         // Check if hints are enabled and if the game is in the right state to show a hint
-        if (!hintsEnabled.value) {
-            // console.log('[useGameLogic] Hints are disabled, skipping check.');
-            return; // Do nothing if hints are disabled
-        }
+        if (!hintsEnabled.value) return; // Do nothing if hints are disabled
+
         if (guesses.value.length === hintTriggerTurn.value && gameStatus.value === 'playing' && !hint.value) {
             if (!targetCharacter.value) return;
 
@@ -250,7 +243,6 @@ export function useGameLogic() {
     watch([dataIsLoading, dataError], ([loading, err]) => {
         if (!loading && !err && gameStatus.value === 'loading') {
             // Data loaded successfully, start the first game
-            console.log("[useGameLogic] Data loaded, starting initial game.");
             startNewGame();
         } else if (err) {
             gameStatus.value = 'error'; // Reflect data loading error
@@ -262,18 +254,12 @@ export function useGameLogic() {
     let initialLoadComplete = false;
     watch(availableCharacters, (newChars, oldChars) => {
         if (dataIsLoading.value) return; // Ignore changes during load
-
         if (!initialLoadComplete && newChars.length > 0) {
             initialLoadComplete = true;
-            console.log("[useGameLogic] Initial character list processed.");
             return; // Don't reset on the very first population
         }
 
-        // If list changes *after* initial load, it implies a server switch filter update.
-        // Check if the list content actually changed significantly (more robust than just length)
-        // For simplicity, we reset if the list reference changes and it's not the initial load.
         if (initialLoadComplete && newChars !== oldChars) {
-            console.log("[useGameLogic] Available characters changed (server switch?), resetting game.");
             startNewGame();
         }
     }, { deep: false }); // deep: false might be enough if the array reference changes

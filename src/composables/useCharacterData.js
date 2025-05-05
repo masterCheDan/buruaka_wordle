@@ -38,8 +38,6 @@ export function useCharacterData() {
         if (selectedServer.value === serverAbbr && allCharacters.value.length > 0) {
             return true; // Already loaded this server's data
         }
-
-        console.log(`Setting server to: ${serverAbbr}`);
         selectedServer.value = serverAbbr;
         localStorage.setItem(SERVER_STORAGE_KEY, serverAbbr);
         // Clear existing data to force reload effect
@@ -56,8 +54,6 @@ export function useCharacterData() {
         error.value = null; // Clear previous error
         // Construct file path based on selected server
         const dataPath = `data/students.json`;
-        console.log(`Loading data from: ${dataPath}`);
-
         isLoading.value = true;
         try {
             const response = await fetch(dataPath);
@@ -67,23 +63,10 @@ export function useCharacterData() {
             // Ensure previous data is cleared before assigning new data
             const rawData = await response.json();
 
-            // --- Data Transformation (If original JSON is Object, not Array) ---
-            // Check if rawData is an object (like {"10001": {...}, "10002": {...}})
-            // If so, convert it to an array. Assumes internal ID is not needed as 'id' property later.
-            // If your JSON is already an array, you can skip this transformation.
-            if (typeof rawData === 'object' && !Array.isArray(rawData) && rawData !== null) {
-                allCharacters.value = Object.entries(rawData).map(([id, charData]) => ({
-                    id: parseInt(id), // Convert string key to number ID
-                    ...charData // Spread the rest of the character data
-                }));
-            } else if (Array.isArray(rawData)) {
-                allCharacters.value = rawData; // Assume it's already the correct array format
-            } else {
-                throw new Error("Loaded data is not in a recognized format (Array or Object of characters).");
-            }
-            // --- End Transformation ---
-
-            console.log(`Master character list loaded:`, allCharacters.value.length);
+            allCharacters.value = Object.entries(rawData).map(([id, charData]) => ({
+                id: parseInt(id), // Convert string key to number ID
+                ...charData // Spread the rest of the character data
+            }));
 
             // Validate data structure (optional but recommended)
             if (allCharacters.value.length > 0) {
@@ -91,9 +74,6 @@ export function useCharacterData() {
                 if (!firstChar.IsReleased || !Array.isArray(firstChar.IsReleased) || firstChar.IsReleased.length !== 3) {
                     console.error("Character data validation failed: 'IsReleased' field is missing or invalid.", firstChar);
                     throw new Error("Invalid character data structure: 'IsReleased' field incorrect.");
-                }
-                if (!firstChar.FamilyName || !firstChar.PersonalName) {
-                    console.warn("Character data warning: Missing FamilyName or PersonalName on first character. Ensure these exist for search.", firstChar);
                 }
             }
         } catch (e) {
@@ -111,7 +91,6 @@ export function useCharacterData() {
             return; // Don't update if invalid
         }
         if (selectedServer.value !== serverAbbr) {
-            console.log(`Setting server filter to: ${serverAbbr}`);
             selectedServer.value = serverAbbr;
             localStorage.setItem(SERVER_STORAGE_KEY, serverAbbr);
             // No data reload needed here, computed property will update
@@ -134,7 +113,6 @@ export function useCharacterData() {
             char.IsReleased.length > serverIndex && // Check if index is valid
             char.IsReleased[serverIndex] === true // Check the boolean value at the index
         );
-        console.log(`Filtered characters for server ${selectedServer.value}: ${filtered.length}`);
         return filtered;
     });
 

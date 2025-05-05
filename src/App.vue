@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { useCharacterData } from './composables/useCharacterData';
 import { useGameLogic } from './composables/useGameLogic';
+import { useTheme } from './composables/useTheme';
 
 // Import Components
 import ScoreCounter from './components/ScoreCounter.vue';
@@ -38,6 +39,22 @@ const {
     toggleHints,
     submitGuess // Need submitGuess here if called directly
 } = useGameLogic();
+
+const { 
+  themePreference, 
+  setThemePreference 
+} = useTheme();
+
+const currentThemeSelection = ref(themePreference.value);
+// Update preference when selection changes
+watch(currentThemeSelection, (newSelection) => {
+    setThemePreference(newSelection);
+});
+// Sync selection back if preference changes elsewhere (e.g. localStorage sync on another tab)
+watch(themePreference, (newPref) => {
+    currentThemeSelection.value = newPref;
+});
+
 
 const isModalOpen = ref(false);
 
@@ -80,6 +97,16 @@ function handleGuess(character) {
 
 <template>
   <div>
+    <div class="theme-switcher">
+        <label for="theme-select">主题:</label>
+        <select id="theme-select" v-model="currentThemeSelection">
+            <option value="light">日间</option>
+            <option value="dark">夜间</option>
+            <option value="auto">自动</option>
+            <option value="system">跟随系统</option>
+        </select>
+    </div>
+    
     <img src="/images/logo/title.png" alt="Logo" class="title-logo" />
     
     <div class="server-selection">

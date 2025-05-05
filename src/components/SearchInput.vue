@@ -71,7 +71,6 @@ watch(() => props.characters, (newChars) => {
             threshold: 0.3, // Adjust threshold - might need tuning for Pinyin vs Hanzi
             ignoreLocation: true, // Useful for matching parts of the searchablePinyin string
         });
-        // console.log("Fuse instance created with augmented data.");
 
     } else {
         fuseInstance.value = null;

@@ -1,25 +1,152 @@
+/* src/assets/main.css */
+
+/* Define CSS Variables for Light Mode (Default) */
+:root {
+    --background-color: #f0f4f8;
+    /* Light grey background */
+    --background-color-secondary: #ffffff;
+    /* White cards/sections */
+    --background-color-tertiary: #e9ecef;
+    /* Light grey elements (header, scores) */
+    --background-color-hover: #f0f4f8;
+    /* Hover background */
+    --background-color-disabled: #cccccc;
+
+    --text-color: #333333;
+    /* Dark primary text */
+    --text-color-secondary: #6c757d;
+    /* Grey secondary text */
+    --text-color-button: #ffffff;
+    /* Text on primary buttons */
+    --text-color-disabled: #6c757d;
+    --text-color-link: #007bff;
+
+    --border-color: #dee2e6;
+    /* Light grey border */
+    --border-color-input: #ced4da;
+
+    --primary-color: #007bff;
+    /* Blue Archive blue */
+    --primary-color-hover: #0056b3;
+
+    --feedback-correct-bg: #d4edda;
+    --feedback-correct-text: #155724;
+    --feedback-correct-border: #c3e6cb;
+
+    --feedback-close-bg: #fff3cd;
+    --feedback-close-text: #856404;
+    --feedback-close-border: #ffeeba;
+
+    --feedback-incorrect-bg: #f8d7da;
+    --feedback-incorrect-text: #721c24;
+    --feedback-incorrect-border: #f5c6cb;
+
+    --feedback-hint-bg: #cce5ff;
+    --feedback-hint-text: #004085;
+    --feedback-hint-border: #b8daff;
+
+    --shadow-color: rgba(0, 0, 0, 0.1);
+
+    /* Attribute Colors (can be overridden in dark mode if needed) */
+    --bullet-explosion: #dc3545;
+    --bullet-piercing: #ffc107;
+    --bullet-mystic: #0d6efd;
+    --bullet-sonic: #0dcaf0;
+    --armor-light: #dc3545;
+    --armor-heavy: #ffc107;
+    --armor-special: #0d6efd;
+    --armor-elastic: #6f42c1;
+}
+
+/* Define Overrides for Dark Mode */
+html.dark {
+    --background-color: #1a1a1a;
+    /* Very dark grey */
+    --background-color-secondary: #2a2a2a;
+    /* Dark grey cards/sections */
+    --background-color-tertiary: #3a3a3a;
+    /* Medium dark grey elements */
+    --background-color-hover: #4a4a4a;
+    --background-color-disabled: #555555;
+
+    --text-color: #e0e0e0;
+    /* Light grey primary text */
+    --text-color-secondary: #aaaaaa;
+    /* Medium grey secondary text */
+    --text-color-button: #ffffff;
+    /* Keep white on primary buttons */
+    --text-color-disabled: #aaaaaa;
+    --text-color-link: #58a6ff;
+    /* Lighter blue for links */
+
+    --border-color: #444444;
+    /* Darker border */
+    --border-color-input: #555555;
+
+    --primary-color: #258cff;
+    /* Slightly brighter blue? */
+    --primary-color-hover: #409fff;
+
+    /* Adjust feedback colors for dark background */
+    --feedback-correct-bg: #203d2a;
+    --feedback-correct-text: #9fefb4;
+    --feedback-correct-border: #2c5a3a;
+
+    --feedback-close-bg: #4d3c11;
+    --feedback-close-text: #ffe08a;
+    --feedback-close-border: #7a5c1f;
+
+    --feedback-incorrect-bg: #5a2a2e;
+    --feedback-incorrect-text: #f7baba;
+    --feedback-incorrect-border: #8b3d43;
+
+    --feedback-hint-bg: #1a3a5f;
+    --feedback-hint-text: #a8d2ff;
+    --feedback-hint-border: #2a5a8f;
+
+    --shadow-color: rgba(255, 255, 255, 0.1);
+
+    /* Maybe adjust attribute text colors for better contrast in dark mode */
+    --bullet-explosion: #ff7b7b;
+    --bullet-piercing: #ffd75b;
+    --bullet-mystic: #73baff;
+    --bullet-sonic: #7fffff;
+    --armor-light: #ff7b7b;
+    --armor-heavy: #ffd75b;
+    --armor-special: #73baff;
+    --armor-elastic: #c792ff;
+}
+
+
 /* Basic Reset & Layout */
 body {
     font-family: sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f0f4f8;
-    color: #333;
+    background-color: var(--background-color);
+    /* USE VAR */
+    color: var(--text-color);
+    /* USE VAR */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* Add transition */
 }
 
 #app {
     max-width: 900px;
     margin: 0 auto;
-    background-color: #fff;
+    background-color: var(--background-color-secondary);
+    /* USE VAR */
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px var(--shadow-color);
+    /* USE VAR */
+    transition: background-color 0.3s ease;
 }
 
 h1 {
     text-align: center;
-    color: #007bff;
-    /* Blue Archive Theme Color */
+    color: var(--primary-color);
+    /* USE VAR */
     margin-bottom: 20px;
 }
 
@@ -27,45 +154,62 @@ button {
     padding: 8px 15px;
     border: none;
     border-radius: 4px;
-    background-color: #007bff;
-    color: white;
+    background-color: var(--primary-color);
+    /* USE VAR */
+    color: var(--text-color-button);
+    /* USE VAR */
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.2s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-color-hover);
+    /* USE VAR */
 }
 
 button:disabled {
-    background-color: #cccccc;
+    background-color: var(--background-color-disabled);
+    /* USE VAR */
+    color: var(--text-color-disabled);
+    /* USE VAR */
     cursor: not-allowed;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="number"],
+select {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color-input);
+    /* USE VAR */
     border-radius: 4px;
     font-size: 1em;
-    width: 100%;
+    background-color: var(--background-color-secondary);
+    /* USE VAR */
+    color: var(--text-color);
+    /* USE VAR */
     box-sizing: border-box;
-    /* Include padding in width */
     margin-bottom: 10px;
 }
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+}
+
 
 /* Component Specific Styles */
 
 /* Score Counter */
 .score-counter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #e9ecef;
+    /* ... display, justify-content etc. */
+    padding: 10px 15px;
+    background-color: var(--background-color-tertiary);
+    /* USE VAR */
     border-radius: 4px;
     margin-bottom: 20px;
     font-size: 0.9em;
+    transition: background-color 0.3s ease;
 }
 
 .score-counter span {
@@ -80,16 +224,24 @@ input[type="text"] {
 
 .dropdown-list {
     position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
+    background-color: var(--background-color-secondary);
+    /* USE VAR */
+    border: 1px solid var(--border-color);
+    /* USE VAR */
     border-top: none;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    /* USE VAR */
     border-radius: 0 0 4px 4px;
     width: 100%;
     max-height: 300px;
     overflow-y: auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 10;
     box-sizing: border-box;
+}
+
+.dropdown-list li:hover {
+    background-color: var(--background-color-hover);
+    /* USE VAR */
 }
 
 .dropdown-list ul {
@@ -126,41 +278,15 @@ input[type="text"] {
     /* Prevent button from shrinking */
 }
 
-/* Image Preview */
-.preview-area {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 130px;
-    /* Ensure space even when empty */
-    margin-bottom: 20px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    padding: 10px;
-}
-
-.preview-area img {
-    max-width: 120px;
-    max-height: 120px;
-    border-radius: 4px;
-}
-
-.preview-area .placeholder {
-    color: #6c757d;
-    font-style: italic;
-}
-
 /* Guess History Table */
 .guess-history-wrapper {
-    /* New wrapper for horizontal scroll */
     overflow-x: auto;
-    /* Allow horizontal scroll on small screens */
     margin-bottom: 20px;
 }
 
 .guess-history {
     /* Removed margin-bottom, moved to wrapper */
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     overflow: hidden;
     /* Still needed for border-radius clipping */
@@ -205,7 +331,7 @@ input[type="text"] {
     font-size: 0.85em;
     overflow-wrap: normal;
     /* Override any global break-word */
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid var(--border-color);
     text-align: center;
     /* CHANGED from center */
 
@@ -232,33 +358,31 @@ input[type="text"] {
 }
 
 .correct {
-    background-color: #d4edda;
-    /* Light Green */
-    color: #155724;
+    background-color: var(--feedback-correct-bg);
+    color: var(--feedback-correct-text);
 }
 
 .close {
-    background-color: #fff3cd;
-    /* Light Yellow */
-    color: #856404;
+    background-color: var(--feedback-close-bg);
+    color: var(--feedback-close-text);
 }
 
 .incorrect {
-    background-color: #f8d7da;
-    /* Light Red / Pink */
-    color: #721c24;
+    background-color: var(--feedback-incorrect-bg);
+    color: var(--feedback-incorrect-text);
 }
+
+
 
 /* Hint Area */
 .hint-area {
     padding: 15px;
     margin-top: 15px;
     margin-bottom: 20px;
-    background-color: #cce5ff;
-    /* Light Blue */
-    border: 1px solid #b8daff;
+    background-color: var(--feedback-hint-bg);
+    border: 1px solid var(--feedback-hint-border);
+    color: var(--feedback-hint-text);
     border-radius: 4px;
-    color: #004085;
     text-align: center;
 }
 
@@ -351,43 +475,35 @@ input[type="text"] {
 }
 
 .bullet-explosion {
-    color: #dc3545;
-    /* Red */
+    color: var(--bullet-explosion);
 }
 
-.bullet-pierce {
-    color: #ffc107;
-    /* Yellow */
+.bullet-piercing {
+    color: var(--bullet-piercing);
 }
 
 .bullet-mystic {
-    color: #0d6efd;
-    /* Blue */
+    color: var(--bullet-mystic);
 }
 
 .bullet-sonic {
-    color: #6f42c1;
-    /* Purple */
+    color: var(--bullet-sonic);
 }
 
 .armor-light {
-    color: #dc3545;
-    /* Red */
+    color: var(--armor-light);
 }
 
 .armor-heavy {
-    color: #ffc107;
-    /* Yellow */
+    color: var(--armor-heavy);
 }
 
-.armor-unarmed {
-    color: #0d6efd;
-    /* Blue */
+.armor-special {
+    color: var(--armor-special);
 }
 
 .armor-elastic {
-    color: #6f42c1;
-    /* Purple */
+    color: var(--armor-elastic);
 }
 
 .modal-fade-enter-active,
@@ -413,11 +529,24 @@ input[type="text"] {
     z-index: 100;
 }
 
+html.dark .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
 .modal-content {
-    background-color: white;
+    background-color: var(--background-color-secondary);
     padding: 30px 40px;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px var(--shadow-color);
     position: relative;
     width: 90%;
     max-width: 500px;
@@ -436,7 +565,7 @@ input[type="text"] {
     background: none;
     border: none;
     font-size: 2rem;
-    color: #aaa;
+    color: var(--text-color-secondary);
     cursor: pointer;
     line-height: 1;
     padding: 0;
@@ -444,13 +573,13 @@ input[type="text"] {
 }
 
 .modal-close-button:hover {
-    color: #333;
+    color: var(--text-color);
 }
 
 
 h2 {
     margin-top: 0;
-    color: #007bff;
+    color: var(--primary-color);
     /* Or style based on win/loss */
     margin-bottom: 20px;
 }
@@ -487,12 +616,12 @@ h3 {
 
 .attributes-list li {
     margin-bottom: 8px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 5px;
 }
 
 .attributes-list li strong {
-    color: #555;
+    color: var(--text-color-secondary);
     margin-right: 5px;
 }
 
@@ -602,8 +731,8 @@ h3 {
     padding: 4px 8px;
     font-size: 0.9em;
     /* Pull from global styles or define here */
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid var(--border-color-input);
+    background-color: var(--background-color-secondary);
 }
 
 .apply-button {
@@ -616,7 +745,7 @@ h3 {
 .server-selection {
     margin-bottom: 15px;
     padding: 10px;
-    background-color: #f8f9fa;
+    background-color: var(--);
     border-radius: 4px;
     display: flex;
     align-items: center;
