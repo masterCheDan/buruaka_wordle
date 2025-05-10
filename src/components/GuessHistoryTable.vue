@@ -60,6 +60,16 @@ function getNameCellClass(feedback) {
                     class="inline-table-icon"
                 />
                 <span>{{ getDisplayValue(item.guess, header.key) }}</span>
+                <span
+                    v-if="item.feedback[header.key + '_direction'] === 'higher'"
+                    class="feedback-arrow">
+                    ▲
+                </span>
+                <span
+                    v-if="item.feedback[header.key + '_direction'] === 'lower'"
+                    class="feedback-arrow">
+                    ▼
+                </span>
             </div>
         </div>
     </div>

@@ -37,7 +37,7 @@ export function useGameLogic() {
     // --- Core State ---
     const targetCharacter = ref(null);
     const guesses = ref([]); // Stores { guess: Character, feedback: FeedbackObject }
-    const gameStatus = ref('loading'); // 'loading', 'playing', 'won', 'lost'
+    const gameStatus = ref('loading');
     const hint = ref(null);
     const maxGuesses = ref(DEFAULT_MAX_GUESSES); // Now a ref
     const customMaxGuessesInput = ref(maxGuesses.value); // Separate ref for the input field
@@ -161,6 +161,11 @@ export function useGameLogic() {
                     } else {
                         feedback[field] = 'incorrect';
                     }
+                    if (String(guessValue).match(/\d+/) > String(targetValue).match(/\d+/)) {
+                        feedback[field + '_direction'] = 'lower';
+                    } else {
+                        feedback[field + '_direction'] = 'higher';
+                    }
                 } else {
                     // Add handling for array comparison if needed (e.g., combatEnvironment)
                     // For now, non-exact non-numeric is incorrect
@@ -174,10 +179,7 @@ export function useGameLogic() {
 
     function checkAndShowHint() {
         // Check if hints are enabled and if the game is in the right state to show a hint
-        if (!hintsEnabled.value) {
-            // console.log('[useGameLogic] Hints are disabled, skipping check.');
-            return; // Do nothing if hints are disabled
-        }
+        if (!hintsEnabled.value) return; // Do nothing if hints are disabled
         if (guesses.value.length === hintTriggerTurn.value && gameStatus.value === 'playing' && !hint.value) {
             if (!targetCharacter.value) return;
 
@@ -200,9 +202,8 @@ export function useGameLogic() {
 
     function submitGuess(guessedCharacter) {
         if (isGameOver.value || !targetCharacter.value) return;
-        if (guesses.value.some(item => item.guess.Id === guessedCharacter.Id)) {
-            return; // Prevent duplicate guesses
-        }
+        if (guesses.value.some(item => item.guess.Id === guessedCharacter.Id)) return; // Prevent duplicate guesses
+
         const feedback = compareAttributes(guessedCharacter, targetCharacter.value);
         guesses.value.unshift({ guess: guessedCharacter, feedback: feedback });
 
@@ -225,20 +226,13 @@ export function useGameLogic() {
         hint.value = null;
         selectTargetCharacter(); // Select new target from current available list
         // Set game status based on whether a target could be selected
-        if (targetCharacter.value) {
-            gameStatus.value = 'playing';
-        } else if (dataIsLoading.value) {
-            gameStatus.value = 'loading'; // Still loading data
-        } else {
-            // If no target could be selected and not loading, something is wrong
-            gameStatus.value = 'error_no_chars';
-        }
+        if (targetCharacter.value) gameStatus.value = 'playing';
+        else if (dataIsLoading.value) gameStatus.value = 'loading'; // Still loading data
+        else gameStatus.value = 'error_no_chars';// If no target could be selected and not loading, something is wrong
     }
 
     function startNewGame() {
-        if (gameStatus.value !== 'loading' && gameStatus.value !== 'error' && gameStatus.value !== 'error_no_chars') {
-            incrementTotalGames();
-        }
+        if (gameStatus.value !== 'loading' && gameStatus.value !== 'error' && gameStatus.value !== 'error_no_chars') incrementTotalGames();
         resetGame();
     }
 

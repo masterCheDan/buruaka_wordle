@@ -652,3 +652,9 @@ h3 {
     font-style: italic;
     color: #6c757d;
 }
+
+.feedback-arrow {
+    margin-left: 4px;
+    /* Space between value and arrow */
+    font-weight: bold;
+}
