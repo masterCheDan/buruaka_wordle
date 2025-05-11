@@ -49,7 +49,7 @@ function generateSearchableStrings(char) {
         searchablePinyin: searchablePinyin // Add the combined pinyin string
     };
 }
-
+0
 
 // --- Initialize/Update Fuse.js ---
 // Watch the original characters prop
@@ -97,12 +97,6 @@ watch(searchTerm, (newTerm) => {
 });
 
 // --- Event Handlers ---
-function selectCharacterForPreview(character) {
-    // Emit the original character object structure if the parent expects it
-    // Find the original object based on ID if necessary, or assume parent handles the augmented obj
-    emit('preview', character); // Emitting the augmented object for now
-}
-
 function selectCharacterForGuess(character) {
     // Emit the original character object structure if the parent expects it
     emit('guess', character); // Emitting the augmented object for now

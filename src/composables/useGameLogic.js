@@ -201,9 +201,10 @@ export function useGameLogic() {
     }
 
     function submitGuess(guessedCharacter) {
-        if (isGameOver.value || !targetCharacter.value) return;
+        if (isGameOver.value || !targetCharacter.value || gameStatus.value !== 'playing') return;
         if (guesses.value.some(item => item.guess.Id === guessedCharacter.Id)) return; // Prevent duplicate guesses
 
+        if (guesses.value.length === 0) incrementTotalGames();
         const feedback = compareAttributes(guessedCharacter, targetCharacter.value);
         guesses.value.unshift({ guess: guessedCharacter, feedback: feedback });
 
@@ -221,19 +222,18 @@ export function useGameLogic() {
         checkAndShowHint();
     }
 
-    function resetGame() {
+    function startNewGame() {
+        console.log("[useGameLogic] Starting new game.");
         guesses.value = [];
         hint.value = null;
-        selectTargetCharacter(); // Select new target from current available list
-        // Set game status based on whether a target could be selected
-        if (targetCharacter.value) gameStatus.value = 'playing';
-        else if (dataIsLoading.value) gameStatus.value = 'loading'; // Still loading data
-        else gameStatus.value = 'error_no_chars';// If no target could be selected and not loading, something is wrong
-    }
+        selectTargetCharacter();
 
-    function startNewGame() {
-        if (gameStatus.value !== 'loading' && gameStatus.value !== 'error' && gameStatus.value !== 'error_no_chars') incrementTotalGames();
-        resetGame();
+        if (targetCharacter.value) gameStatus.value = 'playing';
+        else if (dataIsLoading.value) gameStatus.value = 'loading';
+        else {
+            gameStatus.value = 'error_no_chars'; // No characters available
+            console.error("[useGameLogic] New game started but no target could be selected. Current available characters:", availableCharacters.value.length);
+        }
     }
 
     // --- Initialization and Watchers ---
