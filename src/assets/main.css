@@ -292,10 +292,11 @@ input[type="text"] {
 }
 
 .title-logo {
-    width: 50vw;
+    display: block;
+    width: min(50vw, 900px);
+    max-width: 100%;
     height: auto;
     margin: 0 auto;
-    display: block;
     object-fit: contain;
 }
 

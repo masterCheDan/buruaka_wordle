@@ -140,6 +140,12 @@ export function useGameLogic() {
         const feedback = {};
         if (!targetChar) return feedback; // Safety check
 
+        // 从“16岁”“160cm”等文本中解析出数值；无法解析时返回 NaN
+        function parseNumericValue(value) {
+            const match = String(value).match(/-?\d+(?:\.\d+)?/);
+            return match ? parseFloat(match[0]) : NaN;
+        }
+
         fieldsToCompare.forEach(fieldInfo => {
             const field = fieldInfo.name;
             const guessValue = guessedChar[field];
@@ -154,23 +160,27 @@ export function useGameLogic() {
             }
             if (guessValue === targetValue) {
                 feedback[field] = 'correct';
-            } else {
-                if (fieldType === 'numeric') {
-                    if (Math.abs(String(guessValue).match(/\d+/) - String(targetValue).match(/\d+/)) <= threshold) {
-                        feedback[field] = 'close';
-                    } else {
-                        feedback[field] = 'incorrect';
-                    }
-                    if (String(guessValue).match(/\d+/) > String(targetValue).match(/\d+/)) {
-                        feedback[field + '_direction'] = 'lower';
-                    } else {
-                        feedback[field + '_direction'] = 'higher';
-                    }
-                } else {
-                    // Add handling for array comparison if needed (e.g., combatEnvironment)
-                    // For now, non-exact non-numeric is incorrect
+            } else if (fieldType === 'numeric') {
+                const guessNum = parseNumericValue(guessValue);
+                const targetNum = parseNumericValue(targetValue);
+
+                // 任一值无法解析为数字（如“绝密”“??岁”“未测量”“-”）时无法比较
+                if (!Number.isFinite(guessNum) || !Number.isFinite(targetNum)) {
                     feedback[field] = 'incorrect';
+                } else {
+                    const diff = guessNum - targetNum;
+                    if (diff === 0) {
+                        // 数值相同但文本写法不同（如“16岁” vs “16歳”）视为匹配
+                        feedback[field] = 'correct';
+                    } else {
+                        feedback[field] = Math.abs(diff) <= threshold ? 'close' : 'incorrect';
+                        feedback[field + '_direction'] = diff > 0 ? 'lower' : 'higher';
+                    }
                 }
+            } else {
+                // Add handling for array comparison if needed (e.g., combatEnvironment)
+                // For now, non-exact non-numeric is incorrect
+                feedback[field] = 'incorrect';
             }
         });
         feedback.isCorrectCharacter = (guessedChar.Id === targetChar.Id);
